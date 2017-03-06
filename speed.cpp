@@ -9,12 +9,14 @@ Speed::Speed()
 }
 
 
+// return elapsed time since first tick
 unsigned long Speed::getElapsedMs()
 {
-  return millis() - startMs;
+  return startMs ? millis() - startMs : 0;
 }
 
 
+// return average number of ticks per second since first tick
 double Speed::getHz()
 {
   double elapsedSeconds = getElapsedMs()/1000.0;
@@ -23,12 +25,14 @@ double Speed::getHz()
 }
 
 
+// return current number of ticks
 unsigned long Speed::getTicks()
 {
   return ticks;
 }
 
 
+// increment number of ticks
 void Speed::tick()
 {
   ticks++;
