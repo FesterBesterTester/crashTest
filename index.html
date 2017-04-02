@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<svg width="960" height="500"></svg>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script>
+
+var svg = d3.select("svg"),
+    margin = {top: 70, right: 70, bottom: 70, left: 70},
+    width = +svg.attr("width") - margin.left - margin.right,
+    height = +svg.attr("height") - margin.top - margin.bottom,
+    g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+var parseTime = d3.timeParse("%d-%b-%y");
+
+var xAxis = d3.scaleTime()
+    .rangeRound([0, width]);
+
+var yAxis = d3.scaleLinear()
+    .rangeRound([height, 0]);
+
+var lineX = d3.line()
+    .x(function(d) { return xAxis(d.time); })
+    .y(function(d) { return yAxis(d.x); });
+
+var lineY = d3.line()
+    .x(function(d) { return xAxis(d.time); })
+    .y(function(d) { return yAxis(d.y); });
+
+var lineZ = d3.line()
+    .x(function(d) { return xAxis(d.time); })
+    .y(function(d) { return yAxis(d.z); });
+
+
+function update()
+{
+   d3.json("http://127.0.0.1:8000/api/v1/getrecord/test",
+            function(error, response) {
+              function yExtent() {
+                var x = d3.extent(response, function(d) { return d.x });
+                var y = d3.extent(response, function(d) { return d.y });
+                var z = d3.extent(response, function(d) { return d.z });
+
+                return [Math.min(x[0], y[0], z[0]), Math.max(x[1], y[1], z[1])];
+              }
+
+              if (error) return console.warn(error);
+              xAxis.domain(d3.extent(response, function(d) { return d.time }));
+              yAxis.domain(yExtent());
+
+              /* remove old data */
+              g.select("#lineX").remove();
+              g.select("#lineY").remove();
+              g.select("#lineZ").remove();
+              g.select("#xAxis").remove();
+              g.select("#yAxis").remove();
+
+              /* add new data */
+
+              g.append("g")
+                  .call(d3.axisBottom(xAxis))
+                  .attr("id", "xAxis")
+                  .attr("transform", "translate(0," + height + ")")
+                  .append("text")
+                  .attr("transform", "translate(" + width / 2 + ", " + margin.bottom / 2 + ")")
+                  .attr("fill", "#000")
+                  .text("Time");
+
+
+              g.append("g")
+                  .call(d3.axisLeft(yAxis))
+                  .attr("id", "yAxis")
+                  .append("text")
+                  .attr("fill", "#000")
+                  /* .attr("transform", "rotate(-90)") */
+                  .attr("x", 0 - margin.left / 2)
+                  .attr("y", height / 2)
+                  .attr("dy", "0.71em")
+                  .attr("text-anchor", "middle")
+                  .text("G");
+
+              g.append("path")
+                  .datum(response)
+                  .attr("id", "lineX")
+                  .attr("fill", "none")
+                  .attr("stroke", "red")
+                  .attr("stroke-linejoin", "round")
+                  .attr("stroke-linecap", "round")
+                  .attr("stroke-width", 1.5)
+                  .attr("d", lineX);
+
+              g.append("path")
+                  .datum(response)
+                  .attr("id", "lineY")
+                  .attr("fill", "none")
+                  .attr("stroke", "green")
+                  .attr("stroke-linejoin", "round")
+                  .attr("stroke-linecap", "round")
+                  .attr("stroke-width", 1.5)
+                  .attr("d", lineY);
+
+              g.append("path")
+                  .datum(response)
+                  .attr("id", "lineZ")
+                  .attr("fill", "none")
+                  .attr("stroke", "steelblue")
+                  .attr("stroke-linejoin", "round")
+                  .attr("stroke-linecap", "round")
+                  .attr("stroke-width", 1.5)
+                  .attr("d", lineZ);
+            }
+           );
+}
+
+setInterval(update, 100);
+
+</script>
+
