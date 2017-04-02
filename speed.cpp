@@ -21,7 +21,7 @@ double Speed::getHz()
 {
   double elapsedSeconds = getElapsedMs()/1000.0;
 
-  return ticks/elapsedSeconds;
+  return elapsedSeconds ? ticks/elapsedSeconds : 0.0;
 }
 
 
@@ -39,7 +39,6 @@ void Speed::tick()
 
   if (!startMs)
   {
-    Serial.println("initial tick");
     startMs = millis();
   }
 }
