@@ -37,11 +37,21 @@ var d3_line = d3.line()
     .y(function(d) { return yAxis(d.y); });
 
 
+function extent(data)
+{
+  var x = d3.extent(data, function(d) { return d.x });
+  var y = d3.extent(data, function(d) { return d.y });
+  var z = d3.extent(data, function(d) { return d.z });
+
+  return [Math.min(x[0], y[0], z[0]), Math.max(x[1], y[1], z[1])];
+}
+
+
 function update()
 {
    d3.json("http://127.0.0.1:8000/api/v1/getrecord/test",
             function(error, response) {
-              function yExtent() {
+              function yExtent(data) {
                 var x = d3.extent(response, function(d) { return d.x });
                 var y = d3.extent(response, function(d) { return d.y });
                 var z = d3.extent(response, function(d) { return d.z });
@@ -54,18 +64,19 @@ function update()
               var xData    = response.map(function(d) { return {x: d.time, y: d.x} });
               var yData    = response.map(function(d) { return {x: d.time, y: d.y} });
               var zData    = response.map(function(d) { return {x: d.time, y: d.z} });
+              var yExtent = extent(response);
 
-              updateSVG(xGroup, xData, "Time", "X");
-              updateSVG(yGroup, yData, "Time", "Y");
-              updateSVG(zGroup, zData, "Time", "Z");
+              updateSVG(xGroup, yExtent, xData, "Time", "X");
+              updateSVG(yGroup, yExtent, yData, "Time", "Y");
+              updateSVG(zGroup, yExtent, zData, "Time", "Z");
             });
 }
 
 
-function updateSVG(svgGroup, data, xName, yName)
+function updateSVG(svgGroup, yExtent, data, xName, yName)
 {
    xAxis.domain(d3.extent(data, function(d) { return d.x }));
-   yAxis.domain(d3.extent(data, function(d) { return d.y }));
+   yAxis.domain(yExtent);
 
    /* remove old data */
    svgGroup.select("#line").remove();
