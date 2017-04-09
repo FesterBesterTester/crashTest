@@ -1,17 +1,12 @@
 // requires d3.js
 
-var WIDTH = 960;
-var HEIGHT = 250;
-
-var margin = {top: 40, right: 40, bottom: 80, left: 70};
-
 
 function initSVGs(svgIDs)
 {
   for (svgID of document.querySelectorAll(".graph"))
   {
     var svg = d3.select(svgID);
-    svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    svg.append("g");
   }
 }
 
@@ -57,9 +52,11 @@ function updateSVG(id, yExtent, data, title, xName, yName)
 {
    var svg = document.querySelector(id);
    var dsvg = d3.select(id + " g");
+   var style = window.getComputedStyle(svg);
+   var boundingRect = svg.getBoundingClientRect();
+   var height = boundingRect.height;
+   var width = boundingRect.width;
 
-   var height = svg.height.animVal.value - margin.top - margin.bottom;
-   var width = svg.width.animVal.value - margin.left - margin.right;
    var svgGroup = dsvg;
 
    var xAxis = d3.scaleTime()
@@ -76,44 +73,45 @@ function updateSVG(id, yExtent, data, title, xName, yName)
    yAxis.domain(yExtent);
 
    /* remove old data */
-   svgGroup.select("#line").remove();
-   svgGroup.select("#xAxis").remove();
-   svgGroup.select("#yAxis").remove();
-   svgGroup.select("#title").remove();
+   svgGroup.select(".line").remove();
+   svgGroup.select(".xAxis").remove();
+   svgGroup.select(".yAxis").remove();
+   svgGroup.select(".title").remove();
 
    /* add new data */
 
   svgGroup.append("text")
-       .attr("id", "title")
+       .attr("class", "title")
        .attr("x", width / 2 )
-       .attr("y", 0 - margin.top / 2)
+       .attr("y", "-0.5em")
        .style("text-anchor", "middle")
        .text(title);
 
    svgGroup.append("g")
        .call(d3.axisBottom(xAxis))
-       .attr("id", "xAxis")
+       .attr("class", "xAxis")
        .attr("transform", "translate(0," + height + ")")
        .append("text")
-       .attr("transform", "translate(" + width / 2 + ", " + margin.bottom / 2 + ")")
+       .attr("x", width / 2)
+       .attr("y", "3em")
        .attr("fill", "#000")
        .text(xName);
 
 
    svgGroup.append("g")
        .call(d3.axisLeft(yAxis))
-       .attr("id", "yAxis")
+       .attr("class", "yAxis")
        .append("text")
        .attr("fill", "#000")
-       .attr("x", 0 - margin.left / 2)
+       .attr("x", "-4em")
        .attr("y", height / 2)
-       .attr("dy", "0.71em")
+       .attr("dy", "2em")
        .attr("text-anchor", "middle")
        .text(yName);
 
    svgGroup.append("path")
        .datum(data)
-       .attr("id", "line")
+       .attr("class", "line")
        .attr("fill", "none")
        .attr("stroke", "red")
        .attr("stroke-linejoin", "round")
@@ -121,6 +119,4 @@ function updateSVG(id, yExtent, data, title, xName, yName)
        .attr("stroke-width", 1.5)
        .attr("d", d3_line);
 }
-
-
 
