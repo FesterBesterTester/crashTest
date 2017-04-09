@@ -3,14 +3,12 @@
 var WIDTH = 960;
 var HEIGHT = 250;
 
-var margin = {top: 40, right: 40, bottom: 40, left: 70};
-var width = WIDTH - margin.left - margin.right;
-var height = HEIGHT - margin.top - margin.bottom;
+var margin = {top: 40, right: 40, bottom: 80, left: 70};
 
 
 function initSVGs(svgIDs)
 {
-  for (svgID of svgIDs)
+  for (svgID of document.querySelectorAll(".graph"))
   {
     var svg = d3.select(svgID);
     svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -25,16 +23,6 @@ function getSVGGroup(svgID)
 
 
 var parseTime = d3.timeParse("%d-%b-%y");
-
-var xAxis = d3.scaleTime()
-    .rangeRound([0, width]);
-
-var yAxis = d3.scaleLinear()
-    .rangeRound([height, 0]);
-
-var d3_line = d3.line()
-    .x(function(d) { return xAxis(d.x); })
-    .y(function(d) { return yAxis(d.y); });
 
 
 function extent(data)
@@ -53,24 +41,37 @@ function update()
             function(error, response) {
               if (error) return console.warn(error);
 
-              var xGroup   = getSVGGroup("#x_graph");
-              var yGroup   = getSVGGroup("#y_graph");
-              var zGroup   = getSVGGroup("#z_graph");
-
               var xData    = response.map(function(d) { return {x: d.time, y: d.x} });
               var yData    = response.map(function(d) { return {x: d.time, y: d.y} });
               var zData    = response.map(function(d) { return {x: d.time, y: d.z} });
               var yExtent = extent(response);
 
-              updateSVG(xGroup, yExtent, xData, "X", "Time", "G");
-              updateSVG(yGroup, yExtent, yData, "Y", "Time", "G");
-              updateSVG(zGroup, yExtent, zData, "Z", "Time", "G");
+              updateSVG("#x_graph", yExtent, xData, "X", "Time", "G");
+              updateSVG("#y_graph", yExtent, yData, "Y", "Time", "G");
+              updateSVG("#z_graph", yExtent, zData, "Z", "Time", "G");
             });
 }
 
 
-function updateSVG(svgGroup, yExtent, data, title, xName, yName)
+function updateSVG(id, yExtent, data, title, xName, yName)
 {
+   var svg = document.querySelector(id);
+   var dsvg = d3.select(id + " g");
+
+   var height = svg.height.animVal.value - margin.top - margin.bottom;
+   var width = svg.width.animVal.value - margin.left - margin.right;
+   var svgGroup = dsvg;
+
+   var xAxis = d3.scaleTime()
+     .rangeRound([0, width]);
+
+   var yAxis = d3.scaleLinear()
+     .rangeRound([height, 0]);
+
+   var d3_line = d3.line()
+     .x(function(d) { return xAxis(d.x); })
+     .y(function(d) { return yAxis(d.y); });
+
    xAxis.domain(d3.extent(data, function(d) { return d.x }));
    yAxis.domain(yExtent);
 
@@ -104,7 +105,6 @@ function updateSVG(svgGroup, yExtent, data, title, xName, yName)
        .attr("id", "yAxis")
        .append("text")
        .attr("fill", "#000")
-       /* .attr("transform", "rotate(-90)") */
        .attr("x", 0 - margin.left / 2)
        .attr("y", height / 2)
        .attr("dy", "0.71em")

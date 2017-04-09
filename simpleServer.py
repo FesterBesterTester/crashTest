@@ -9,7 +9,7 @@ import argparse
 import serial
 
 
-MAX_READINGS = 2000
+MAX_READINGS = 1000
 
 class AccelerometerReadings(object):
     def __init__(self):

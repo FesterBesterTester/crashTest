@@ -82,13 +82,7 @@ void loop()
   }
   else if (calibrated)
   {
-  /*
-    float xAccel = accelerometer.GetG(Accelerometer::AXIS::X);
-    float yAccel = accelerometer.GetG(Accelerometer::AXIS::Y);
-    float zAccel = accelerometer.GetG(Accelerometer::AXIS::Z);
-  */
     float netAccel = accelerometer.GetNetG();
-
     float xAccel = accelerometer.GetG(Accelerometer::AXIS::X);
     float yAccel = accelerometer.GetG(Accelerometer::AXIS::Y);
     float zAccel = accelerometer.GetG(Accelerometer::AXIS::Z);
@@ -106,11 +100,6 @@ void loop()
 
     speed.tick();
 
-/*
-    if (netAccel > maxNet) { maxNet = netAccel; Serial.print("Max net: "); Serial.print(maxNet); Serial.print(" G @ "); Serial.print(speed.getElapsedMs()/1000); Serial.println(" seconds");}
-    if (netAccel < minNet) { minNet = netAccel; Serial.print("Min net: "); Serial.print(minNet); Serial.print(" G @ "); Serial.print(speed.getElapsedMs()/1000); Serial.println(" seconds");}
-
-*/
   }
 }
 

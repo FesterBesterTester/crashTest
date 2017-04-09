@@ -3,6 +3,11 @@
   <head>
     <meta charset="UTF-8">
     <title>Crash Test</title>
+    <style>
+      .graph {
+        background-color: #CCCCFF;
+      }
+    </style>
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="./crashTest.js"></script>
     <script>
@@ -13,9 +18,9 @@
     </script>
   </head>
   <body>
-    <svg id="x_graph" width="960" height="250"></svg>
-    <svg id="y_graph" width="960" height="250"></svg>
-    <svg id="z_graph" width="960" height="250"></svg>
+    <svg class="graph" id="x_graph" width="960" height="250"></svg>
+    <svg class="graph" id="y_graph" width="960" height="250"></svg>
+    <svg class="graph" id="z_graph" width="960" height="250"></svg>
   </body>
 
 </html>
